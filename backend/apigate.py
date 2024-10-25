@@ -203,7 +203,7 @@ def get_product_by_price():
 @app.route('/api/v1/get_product_by_client_id', methods=['GET'])
 def get_product_by_client_id():
     client_id = request.args.get('client_id')
-    product = db.get_product_by_client_id(client_id)
+    product = db.get_product_by_client_id(client_id )
     return jsonify(product) if product else jsonify("Product not found"), 404
 
 # Routes for getting warehouse information
@@ -330,6 +330,6 @@ def get_transactions():
 
 
 
-
+# running the app
 if __name__ == '__main__':
     app.run(debug=True)

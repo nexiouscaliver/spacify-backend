@@ -298,10 +298,15 @@ def add_transaction(product_id, warehouse_id, transaction_type, quantity):
     """, (product_id, warehouse_id))
     result = cursor.fetchone()
 
+    cursor.execute("""
+    SELECT capacity FROM warehouses WHEREwarehouse_id = ?
+    """, (warehouse_id))
+    result2 = cursor.fetchone()
+
     if result:
         # Calculate new inventory quantity
         new_quantity = result[0] + quantity
-        if new_quantity < 0:
+        if new_quantity < 0 or new_quantity > result2[0]:
             print("Error: Not enough inventory for this operation.")
             return False  # Operation failed due to insufficient inventory
 
