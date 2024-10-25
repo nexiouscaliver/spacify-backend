@@ -105,6 +105,33 @@ def getname_ware(username:str):
         conn.commit()
         conn.close()
 
+def getid_ware(username:str):
+    conn = sqlite3.connect(dbname)
+    cur = conn.cursor()
+    sql = f'select id from ware where username="{username}";'
+    try:
+        cur.execute(sql)
+        shpass = cur.fetchall()
+        #print(shpass)
+        if shpass == []:
+            print(f"ware ware {username} not found")
+            return False
+        if shpass:
+            print(f"ware {username} has full id {shpass[0][0]}")
+            return shpass[0][0]
+        else:
+            print(f"ware Incorrect password :: {username}")
+            return False
+    except sqlite3.Error as error:
+        print(f"SQL Error occured :: {username} :: {error}")
+        return False
+    except Exception as e:
+        print(f"PY Error Occured:: {username} :: {e}")
+        return False
+    finally:
+        cur.close()
+        conn.commit()
+        conn.close()
 
 def create_client(username:str,password:str,name:str):
     conn = sqlite3.connect(dbname)
@@ -172,6 +199,34 @@ def getname_client(username:str):
             return False
         if shpass:
             print(f"client {username} has correct name {shpass[0][0]}")
+            return shpass[0][0]
+        else:
+            print(f"client Incorrect password :: {username}")
+            return False
+    except sqlite3.Error as error:
+        print(f"SQL Error occured :: {username} :: {error}")
+        return False
+    except Exception as e:
+        print(f"PY Error Occured:: {username} :: {e}")
+        return False
+    finally:
+        cur.close()
+        conn.commit()
+        conn.close()
+
+def getid_client(username:str):
+    conn = sqlite3.connect(dbname)
+    cur = conn.cursor()
+    sql = f'select id from client where username="{username}";'
+    try:
+        cur.execute(sql)
+        shpass = cur.fetchall()
+        print(shpass)
+        if shpass == []:
+            print(f"USER client {username} not found")
+            return False
+        if shpass:
+            print(f"client {username} has correct id {shpass[0][0]}")
             return shpass[0][0]
         else:
             print(f"client Incorrect password :: {username}")
