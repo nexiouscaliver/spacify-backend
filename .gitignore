@@ -1,2 +1,4 @@
 .spac
 .spac/*
+__pycache__/
+*.pyc
