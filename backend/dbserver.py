@@ -58,8 +58,7 @@ def create_tables():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS client (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        product_id INTEGER NOT NULL,
-        
+        product_id INTEGER NOT NULL
     );
     """)
 
