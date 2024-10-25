@@ -123,13 +123,6 @@ def get_warehouse():
     conn.close()
     return rows
 
-def get_product():
-    conn = sqlite3.connect(proddb)
-    c = conn.cursor()
-    c.execute("SELECT * FROM products")
-    rows = c.fetchall()
-    conn.close()
-    return rows
 
 def get_product_by_id(id):
     conn = sqlite3.connect(proddb)
