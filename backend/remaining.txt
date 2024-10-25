@@ -1,0 +1,21 @@
+get_product_by_id(id):
+get_product_by_name(name):
+get_product_by_warehouse(warehouse):
+get_product_by_category(category):
+get_product_by_price(price):
+get_warehouse_by_id(id):
+get_warehouse_by_name(name):
+get_warehouse_by_location(location):
+get_inventory_by_product(product_id):
+get_inventory_by_warehouse(warehouse_id):
+get_inventory_by_product_and_warehouse(product_id, warehouse_id):
+get_inventory_by_quantity(quantity):
+get_inventory_by_product_and_quantity(product_id, quantity):
+get_inventory_by_warehouse_and_quantity(warehouse_id, quantity):
+get_inventory_by_product_and_warehouse_and_quantity(product_id, warehouse_id, quantity):
+get_warehouse_location_by_id(id):
+
+add_transaction(product_id, warehouse_id, transaction_type, quantity):
+add_sale(product_id, warehouse_id, quantity_sold):
+add_transfer(product_id, source_warehouse_id, destination_warehouse_id, quantity_transferred):
+get_transactions(product_id=None, warehouse_id=None, transaction_type=None, date_from=None, date_to=None,product_name=None):
