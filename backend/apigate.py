@@ -13,6 +13,7 @@ from subprocess import run
 import dbserver as db         #FOR SQL SERVER DATABASE
 import loginscript as login   #FOR SQL SERVER DATABASE
 from flask_cors import CORS
+import reportgen as report
 
 app = Flask(__name__)
 CORS(app)
@@ -32,7 +33,7 @@ def home():
 @app.route('/api/v1/warelogin',methods=['POST'])
 def warelogin():
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['email']
         password = request.form['password']
         if login.load_ware(username,password):
             return jsonify("Login Successfull"), 200
@@ -44,7 +45,7 @@ def warelogin():
 @app.route('/api/v1/warecreate',methods=['POST'])
 def warecreate():
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['email']
         password = request.form['password']
         name = request.form['name']
         if login.create_ware(username,password,name):
@@ -57,7 +58,7 @@ def warecreate():
 @app.route('/api/v1/clientlogin',methods=['POST'])
 def clientlogin():
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['email']
         password = request.form['password']
         if login.load_client(username,password):
             return jsonify("Login Successfull"), 200
@@ -69,7 +70,7 @@ def clientlogin():
 @app.route('/api/v1/clientcreate',methods=['POST'])
 def clientcreate():
     if request.method == 'POST':
-        username = request.form['username']
+        username = request.form['email']
         password = request.form['password']
         name = request.form['name']
         if login.create_client(username,password,name):
@@ -89,7 +90,8 @@ def addproduct():
         description = request.form['description']
         price = request.form['price']
         category = request.form['category']
-        clientid = login.getid_client(request.form['client'])
+        # clientid = login.getid_client(request.form['client'])
+        clientid = request.form['client']
 
         if db.add_product(name, description, price, category, clientid):
             return jsonify("Product Added"), 200
@@ -97,6 +99,13 @@ def addproduct():
             return jsonify("Product Addition Failed"), 404
     else:
         return jsonify("ERROR : contact the correct endpoint for the API"), 404
+
+@app.route('/api/v1/clientid',methods=['POST'])
+def clientid():
+    if request.method == 'POST':
+        uname = request.form['username']
+        return jsonify(login.getid_client(uname))
+
 
 # Function to add a new warehouse
 @app.route('/api/v1/addwarehouse',methods=['POST'])
@@ -174,96 +183,156 @@ def getinventorylevels():
 def get_product_by_id():
     id = request.args.get('id')
     product = db.get_product_by_id(id)
-    return jsonify(product) if product else jsonify("Product not found"), 404
+    if product:
+        return jsonify(product),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(product) if product else jsonify("Product not found"), 404
 
 @app.route('/api/v1/get_product_by_name', methods=['GET'])
 def get_product_by_name():
     name = request.args.get('name')
     product = db.get_product_by_name(name)
-    return jsonify(product) if product else jsonify("Product not found"), 404
+    if product:
+        return jsonify(product),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(product) if product else jsonify("Product not found"), 404
 
 @app.route('/api/v1/get_product_by_warehouse', methods=['GET'])
 def get_product_by_warehouse():
     warehouse = request.args.get('warehouse')
     product = db.get_product_by_warehouse(warehouse)
-    return jsonify(product) if product else jsonify("Product not found"), 404
+    if product:
+        return jsonify(product),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(product) if product else jsonify("Product not found"), 404
 
 @app.route('/api/v1/get_product_by_category', methods=['GET'])
 def get_product_by_category():
     category = request.args.get('category')
     product = db.get_product_by_category(category)
-    return jsonify(product) if product else jsonify("Product not found"), 404
+    if product:
+        return jsonify(product),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(product) if product else jsonify("Product not found"), 404
 
 @app.route('/api/v1/get_product_by_price', methods=['GET'])
 def get_product_by_price():
     price = request.args.get('price')
     product = db.get_product_by_price(price)
-    return jsonify(product) if product else jsonify("Product not found"), 404
+    if product:
+        return jsonify(product),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(product) if product else jsonify("Product not found"), 404
 
 @app.route('/api/v1/get_product_by_client_id', methods=['GET'])
 def get_product_by_client_id():
     client_id = request.args.get('client_id')
     product = db.get_product_by_client_id(client_id )
-    return jsonify(product) if product else jsonify("Product not found"), 404
+    if product:
+        return jsonify(product),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(product),200 if product else jsonify("Product not found"), 404
 
 # Routes for getting warehouse information
 @app.route('/api/v1/get_warehouse_by_id', methods=['GET'])
 def get_warehouse_by_id():
     id = request.args.get('id')
     warehouse = db.get_warehouse_by_id(id)
-    return jsonify(warehouse) if warehouse else jsonify("Warehouse not found"), 404
+    if warehouse:
+        return jsonify(warehouse),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(warehouse) if warehouse else jsonify("Warehouse not found"), 404
 
 @app.route('/api/v1/get_warehouse_by_name', methods=['GET'])
 def get_warehouse_by_name():
     name = request.args.get('name')
     warehouse = db.get_warehouse_by_name(name)
-    return jsonify(warehouse) if warehouse else jsonify("Warehouse not found"), 404
+    if warehouse:
+        return jsonify(warehouse),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(warehouse) if warehouse else jsonify("Warehouse not found"), 404
 
 @app.route('/api/v1/get_warehouse_by_location', methods=['GET'])
 def get_warehouse_by_location():
     location = request.args.get('location')
     warehouse = db.get_warehouse_by_location(location)
-    return jsonify(warehouse) if warehouse else jsonify("Warehouse not found"), 404
+    if warehouse:
+        return jsonify(warehouse),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(warehouse) if warehouse else jsonify("Warehouse not found"), 404
 
 # Routes for getting inventory information
 @app.route('/api/v1/get_inventory_by_product', methods=['GET'])
 def get_inventory_by_product():
     product_id = request.args.get('product_id')
     inventory = db.get_inventory_by_product(product_id)
-    return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
+    if inventory:
+        return jsonify(inventory),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
 
 @app.route('/api/v1/get_inventory_by_warehouse', methods=['GET'])
 def get_inventory_by_warehouse():
     warehouse_id = request.args.get('warehouse_id')
     inventory = db.get_inventory_by_warehouse(warehouse_id)
-    return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
+    if inventory:
+        return jsonify(inventory),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
 
 @app.route('/api/v1/get_inventory_by_product_and_warehouse', methods=['GET'])
 def get_inventory_by_product_and_warehouse():
     product_id = request.args.get('product_id')
     warehouse_id = request.args.get('warehouse_id')
     inventory = db.get_inventory_by_product_and_warehouse(product_id, warehouse_id)
-    return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
+    if inventory:
+        return jsonify(inventory),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
 
 @app.route('/api/v1/get_inventory_by_quantity', methods=['GET'])
 def get_inventory_by_quantity():
     quantity = request.args.get('quantity')
     inventory = db.get_inventory_by_quantity(quantity)
-    return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
+    if inventory:
+        return jsonify(inventory),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
 
 @app.route('/api/v1/get_inventory_by_product_and_quantity', methods=['GET'])
 def get_inventory_by_product_and_quantity():
     product_id = request.args.get('product_id')
     quantity = request.args.get('quantity')
     inventory = db.get_inventory_by_product_and_quantity(product_id, quantity)
-    return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
+    if inventory:
+        return jsonify(inventory),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
 
 @app.route('/api/v1/get_inventory_by_warehouse_and_quantity', methods=['GET'])
 def get_inventory_by_warehouse_and_quantity():
     warehouse_id = request.args.get('warehouse_id')
     quantity = request.args.get('quantity')
     inventory = db.get_inventory_by_warehouse_and_quantity(warehouse_id, quantity)
-    return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
+    if inventory:
+        return jsonify(inventory),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
 
 @app.route('/api/v1/get_inventory_by_product_and_warehouse_and_quantity', methods=['GET'])
 def get_inventory_by_product_and_warehouse_and_quantity():
@@ -271,13 +340,21 @@ def get_inventory_by_product_and_warehouse_and_quantity():
     warehouse_id = request.args.get('warehouse_id')
     quantity = request.args.get('quantity')
     inventory = db.get_inventory_by_product_and_warehouse_and_quantity(product_id, warehouse_id, quantity)
-    return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
+    if inventory:
+        return jsonify(inventory),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(inventory) if inventory else jsonify("Inventory not found"), 404
 
 @app.route('/api/v1/get_warehouse_location_by_id', methods=['GET'])
 def get_warehouse_location_by_id():
     id = request.args.get('id')
     location = db.get_warehouse_location_by_id(id)
-    return jsonify(location) if location else jsonify("Location not found"), 404
+    if location:
+        return jsonify(location),200
+    else:
+        jsonify("Product not found"), 404
+    # return jsonify(location) if location else jsonify("Location not found"), 404
 
 # Routes for adding transactions
 @app.route('/api/v1/add_transaction', methods=['POST'])
@@ -327,6 +404,11 @@ def get_transactions():
     transactions = db.get_transactions(product_id, warehouse_id, transaction_type, date_from, date_to, product_name)
     return jsonify(transactions) if transactions else jsonify("Transactions not found"), 404
 
+@app.route('/api/v1/reportgen', methods=['GET'])
+def reportgen():
+    client_id = request.args.get('email')
+    genreport = report.gen_report(client_id)
+    return jsonify(genreport)
 
 
 
