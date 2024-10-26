@@ -9,13 +9,18 @@ dbname = "user.db"
 def init_db(): #server
     conn = sqlite3.connect(dbname)
     cur = conn.cursor()
-    q1 = "CREATE TABLE IF NOT EXISTS ware(id int auto increment , username text primary key, password text, name text);"
+    q1 = "CREATE TABLE IF NOT EXISTS ware(id int auto increment, username text primary key, password text, name text);"
     cur.execute(q1)
-    q1 = "CREATE TABLE IF NOT EXISTS client(id int auto increment , username text primary key, password text, name text);"
+    q1 = "CREATE TABLE IF NOT EXISTS client(id int auto increment, username text primary key, password text, name text);"
     cur.execute(q1)
+    # cur.close()
+    # q1 = "insert into ware values(0 , 'testclient','12345','client');"
+    # cur.execute(q1)
+    # q1 = "insert into client values(0 , 'testware','12345','ware');"
+    # cur.execute(q1)
     cur.close()
-    create_client("testclient",'12345','client')
-    create_ware("testware",'12345','ware')
+    # create_client("testclient",'12345','client')
+    # create_ware("testware",'12345','ware')
     print("SQL init compleated!")
     conn.commit()
     conn.close()
@@ -217,7 +222,7 @@ def getname_client(username:str):
 def getid_client(username:str):
     conn = sqlite3.connect(dbname)
     cur = conn.cursor()
-    sql = f'select id from client where username="{username}";'
+    sql = f'select * from client where username="{username}";'
     try:
         cur.execute(sql)
         shpass = cur.fetchall()
@@ -227,7 +232,7 @@ def getid_client(username:str):
             return False
         if shpass:
             print(f"client {username} has correct id {shpass[0][0]}")
-            return shpass[0][0]
+            return shpass
         else:
             print(f"client Incorrect password :: {username}")
             return False
@@ -242,4 +247,4 @@ def getid_client(username:str):
         conn.commit()
         conn.close()
 
-# init_db()
+init_db()
