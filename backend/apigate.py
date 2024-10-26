@@ -89,7 +89,7 @@ def addproduct():
         description = request.form['description']
         price = request.form['price']
         category = request.form['category']
-        clientid = login.get_client_id(request.form['client'])
+        clientid = login.getid_client(request.form['client'])
 
         if db.add_product(name, description, price, category, clientid):
             return jsonify("Product Added"), 200
