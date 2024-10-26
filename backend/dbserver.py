@@ -59,7 +59,7 @@ def create_tables():
     CREATE TABLE IF NOT EXISTS client (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         product_id INTEGER NOT NULL
-        
+
     );
     """)
 
@@ -77,6 +77,7 @@ def add_product(name, description, price, category,client_id):
     """, (name, description, price, category, client_id))
     conn.commit()
     conn.close()
+    return True
 
 # Function to add a new warehouse
 def add_warehouse(name, location, capacity=1000):
@@ -89,6 +90,7 @@ def add_warehouse(name, location, capacity=1000):
     """, (name, location, capacity))
     conn.commit()
     conn.close()
+    return True
 
 # Function to add inventory to a warehouse
 def add_inventory(product_id, warehouse_id, quantity):
@@ -101,6 +103,7 @@ def add_inventory(product_id, warehouse_id, quantity):
     """, (product_id, warehouse_id, quantity))
     conn.commit()
     conn.close()
+    return True
 
 # Function to update inventory quantity
 def update_inventory(product_id, warehouse_id, quantity):
@@ -114,6 +117,7 @@ def update_inventory(product_id, warehouse_id, quantity):
     """, (quantity, product_id, warehouse_id))
     conn.commit()
     conn.close()
+    return True
 
 # Function to retrieve inventory levels for a specific product across warehouses
 def get_inventory_levels(product_id):
@@ -126,8 +130,9 @@ def get_inventory_levels(product_id):
     JOIN warehouses w ON i.warehouse_id = w.warehouse_id
     WHERE i.product_id = ?
     """, (product_id,))
+    out = cursor.fetchall()
     conn.close()
-    return cursor.fetchall()
+    return out
 
 
 # Function to retrieve all products
@@ -136,8 +141,9 @@ def get_all_products():
     c = conn.cursor()
     cursor = c
     cursor.execute("SELECT * FROM products")
+    out = cursor.fetchall()
     conn.close()
-    return cursor.fetchall()
+    return out
 
 def get_warehouse():
     conn = sqlite3.connect(proddb)
@@ -159,7 +165,7 @@ def get_product_by_id(id):
 def get_product_by_name(name):
     conn = sqlite3.connect(proddb)
     c = conn.cursor()
-    c.execute("SELECT * FROM products WHERE name=?", (name,))
+    c.execute("SELECT * FROM products WHERE product_name=?", (name,))
     rows = c.fetchall()
     conn.close()
     return rows
@@ -199,7 +205,7 @@ def get_product_by_client_id(client_id):
 def get_warehouse_by_id(id):
     conn = sqlite3.connect(proddb)
     c = conn.cursor()
-    c.execute("SELECT * FROM warehouses WHERE id=?", (id,))
+    c.execute("SELECT * FROM warehouses WHERE warehouse_id=?", (id,))
     rows = c.fetchall()
     conn.close()
     return rows
@@ -207,7 +213,7 @@ def get_warehouse_by_id(id):
 def get_warehouse_by_name(name):
     conn = sqlite3.connect(proddb)
     c = conn.cursor()
-    c.execute("SELECT * FROM warehouses WHERE name=?", (name,))
+    c.execute("SELECT * FROM warehouses WHERE warehouse_name=?", (name,))
     rows = c.fetchall()
     conn.close()
     return rows
@@ -279,7 +285,7 @@ def get_inventory_by_product_and_warehouse_and_quantity(product_id, warehouse_id
 def get_warehouse_location_by_id(id):
     conn = sqlite3.connect(proddb)
     c = conn.cursor()
-    c.execute("SELECT location FROM warehouses WHERE id=?", (id,))
+    c.execute("SELECT location FROM warehouses WHERE warehouse_id=?", (id,))
     rows = c.fetchall()
     conn.close()
     return rows
@@ -299,7 +305,7 @@ def add_transaction(product_id, warehouse_id, transaction_type, quantity):
     result = cursor.fetchone()
 
     cursor.execute("""
-    SELECT capacity FROM warehouses WHEREwarehouse_id = ?
+    SELECT capacity FROM warehouses WHERE warehouse_id = ?
     """, (warehouse_id))
     result2 = cursor.fetchone()
 
@@ -337,6 +343,7 @@ def add_transaction(product_id, warehouse_id, transaction_type, quantity):
 
 def add_sale(product_id, warehouse_id, quantity_sold):
     # Use negative quantity to represent sale (deduction)
+    quantity_sold = int(quantity_sold)
     if add_transaction(product_id, warehouse_id, "sale", -quantity_sold):
         return(f"Sale recorded: Product ID {product_id}, Warehouse ID {warehouse_id}, Quantity Sold: {quantity_sold}")
     else:
@@ -344,6 +351,7 @@ def add_sale(product_id, warehouse_id, quantity_sold):
 
 def add_transfer(product_id, source_warehouse_id, destination_warehouse_id, quantity_transferred):
     # Transfer out from source warehouse (negative quantity)
+    quantity_transferred = int(quantity_transferred)
     if add_transaction(product_id, source_warehouse_id, "transfer out", -quantity_transferred):
         # Transfer in to destination warehouse (positive quantity)
         if add_transaction(product_id, destination_warehouse_id, "transfer in", quantity_transferred):
