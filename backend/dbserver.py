@@ -59,6 +59,7 @@ def create_tables():
     CREATE TABLE IF NOT EXISTS client (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         product_id INTEGER NOT NULL
+        
     );
     """)
 
