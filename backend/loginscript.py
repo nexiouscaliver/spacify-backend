@@ -247,4 +247,4 @@ def getid_client(username:str):
         conn.commit()
         conn.close()
 
-init_db()
+# init_db()
